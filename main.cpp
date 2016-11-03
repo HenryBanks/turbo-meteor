@@ -31,6 +31,10 @@
 
 sf::Mutex mutex;
 
+double playRound(sf::RenderWindow &window);
+
+void endRound(sf::RenderWindow &window, double endTime);
+
 
 void func()
 {
@@ -93,14 +97,6 @@ int main(int, char const**)
     }
     sf::Sprite sprite(texture);
 
-    // Create a graphical text to display
-    sf::Font font;
-    if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
-        return EXIT_FAILURE;
-    }
-    sf::Text textTime("Hello World", font, 50);
-    textTime.setFillColor(sf::Color::Red);
-
     // Load a music to play
     sf::Music music;
     if (!music.openFromFile(resourcePath() + "nice_music.ogg")) {
@@ -119,13 +115,25 @@ int main(int, char const**)
     // it works out of the box
     glEnable(GL_TEXTURE_2D);
     
+    while (window.isOpen()) {
+        double endTime = playRound(window);
+        
+        endRound(window, endTime);
+    }
     
-    // deactivate its OpenGL context
-    //window.setActive(false);
     
-    // launch the rendering thread
-    //sf::Thread thread(&renderingThread, &window);
-    //thread.launch();
+
+    return EXIT_SUCCESS;
+}
+
+double playRound(sf::RenderWindow &window){
+    
+    sf::Font font;
+    if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
+        return EXIT_FAILURE;
+    }
+    
+    sf::Clock clock;
     
     sf::CircleShape shape(50);
     
@@ -137,24 +145,24 @@ int main(int, char const**)
     
     shape.setPosition(window.getSize().x/2, window.getSize().y/2);
     
-    //sf::CircleShape proj(10);
-    
-    //proj.setFillColor(sf::Color::White);
-    
     bool upB, downB, leftB, rightB;
     
     upB=false;
     downB=false;
     leftB=false;
     rightB=false;
-
+    
     double xDiff=0, yDiff=0;
     
     Projectiles::Projectiles projectiles;
     
     Meteors::Meteors meteors;
     
+    sf::Text textTime("Hello World", font, 50);
+    textTime.setFillColor(sf::Color::Red);
+    
     double timeHolder=0;
+    double timeSecs;
     
     bool running=true;
     
@@ -167,6 +175,7 @@ int main(int, char const**)
             if (event.type==sf::Event::Closed) {
                 window.close();
                 running=false;
+                exit(0);
             }
             else if (event.type==sf::Event::KeyPressed){
                 if (event.key.code==sf::Keyboard::Up||event.key.code==sf::Keyboard::W) {
@@ -222,10 +231,10 @@ int main(int, char const**)
         
         
         sf::Time elapsed = clock.getElapsedTime();
-        double timeSecs=elapsed.asSeconds()+timeHolder;
+        timeSecs=elapsed.asSeconds()+timeHolder;
         textTime.setString(std::to_string(timeSecs));
         
-        double difficulty=1;
+        double difficulty=1+timeSecs/10;
         
         if (clock.getElapsedTime().asSeconds()>0.5/difficulty) {
             meteors.randomMeteor(window);
@@ -261,27 +270,43 @@ int main(int, char const**)
         
     }
 
-    // Play the music
-    //music.play();
-    while (window.isOpen()) {
+    return timeSecs;
+}
+
+void endRound(sf::RenderWindow &window, double endTime){
+    bool ending=true;
+    
+    sf::Font font;
+    if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
+        return EXIT_FAILURE;
+    }
+    
+    while (ending) {
         
         sf::Event event;
         
         while (window.pollEvent(event)) {
             if (event.type==sf::Event::Closed) {
                 window.close();
+                return EXIT_SUCCESS;
+            }
+            if (event.type==sf::Event::KeyPressed){
+                ending=false;
             }
         }
         
         window.clear();
         sf::Text textEnd("GAME OVER", font, 150);
+        sf::Text textTime("TIME: " + std::to_string(endTime),font, 150);
         textEnd.setFillColor(sf::Color::White);
         textEnd.setPosition((window.getSize().x-textEnd.getLocalBounds().width)/2, (window.getSize().y-textEnd.getLocalBounds().height)/2);
+        textTime.setFillColor(sf::Color::White);
+        textTime.setPosition((window.getSize().x-textTime.getLocalBounds().width)/2, (window.getSize().y+textEnd.getLocalBounds().height)/2);
         window.draw(textEnd);
         window.draw(textTime);
         window.display();
         
     }
-
+    
     return EXIT_SUCCESS;
 }
