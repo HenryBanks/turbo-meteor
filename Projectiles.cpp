@@ -44,3 +44,39 @@ void Projectiles::updateProjs(){
 std::vector<sf::CircleShape> Projectiles::getProjs(){
     return vecProjs;
 }
+
+void Projectiles::checkForDeletion(sf::RenderWindow &window){
+    for (int i=0; i<vecProjs.size(); i++) {
+        sf::CircleShape proj=vecProjs[i];
+        float xloc=proj.getPosition().x;
+        float yloc=proj.getPosition().y;
+        if (xloc>window.sf::Window::getSize().x||xloc<0) {
+            vecProjs.erase(vecProjs.begin()+i);
+            vecVels.erase(vecVels.begin()+i);
+        }
+        else if(yloc>window.sf::Window::getSize().y||yloc<0) {
+            vecProjs.erase(vecProjs.begin()+i);
+            vecVels.erase(vecVels.begin()+i);
+        }
+    }
+}
+
+int Projectiles::getNumProjs(){
+    return vecProjs.size();
+}
+
+void Projectiles::shoot(sf::Event event, sf::CircleShape markerShip){
+    if (event.type==sf::Event::MouseButtonPressed){
+        sf::CircleShape temp(10);
+        double xOrig=markerShip.getPosition().x+markerShip.getRadius();
+        double yOrig=markerShip.getPosition().y+markerShip.getRadius();
+        temp.setPosition(xOrig, yOrig);
+        float xDiff=event.mouseButton.x-temp.getRadius()-xOrig;
+        float yDiff=event.mouseButton.y-temp.getRadius()-yOrig;
+        float norm=sqrt(xDiff*xDiff+yDiff*yDiff);
+        float speed=1.5;
+        xDiff=speed*xDiff/norm;
+        yDiff=speed*yDiff/norm;
+        addProj(temp, xDiff, yDiff);
+    }
+}

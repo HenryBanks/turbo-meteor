@@ -1,13 +1,13 @@
 //
-//  Meteors.hpp
+//  PowerUp.hpp
 //  Test SFML
 //
-//  Created by Henry Banks on 01/11/2016.
+//  Created by Henry Banks on 04/11/2016.
 //  Copyright © 2016 HBanks. All rights reserved.
 //
 
-#ifndef Meteors_hpp
-#define Meteors_hpp
+#ifndef PowerUp_hpp
+#define PowerUp_hpp
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
@@ -21,14 +21,13 @@
 #include <random>
 
 
-class Meteors : public Projectiles{
+class PowerUp : public Projectiles{
 public:
-    void randomMeteor(sf::RenderWindow &window, float speed);
+    void randomPowerUp(sf::RenderWindow &window, float speed);
     bool checkCollision(sf::CircleShape target);
-    void checkCollShots(std::vector<sf::CircleShape> shotVec);
     
 private:
     
 };
 
-#endif /* Meteors_hpp */
+#endif /* PowerUp_hpp */

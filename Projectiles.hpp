@@ -29,6 +29,9 @@ public:
     void drawProjs(sf::RenderWindow &window);
     void updateProjs();
     std::vector<sf::CircleShape> getProjs();
+    void checkForDeletion(sf::RenderWindow &window);
+    int getNumProjs();
+    void shoot(sf::Event event, sf::CircleShape markerShip);
     
 protected:
     std::vector<sf::CircleShape> vecProjs;

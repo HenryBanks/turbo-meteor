@@ -24,6 +24,7 @@
 #include <math.h>
 #include "Projectiles.hpp"
 #include "Meteors.hpp"
+#include "Ship.hpp"
 
 
 // Here is a small helper for you! Have a look.
@@ -35,6 +36,7 @@ double playRound(sf::RenderWindow &window);
 
 void endRound(sf::RenderWindow &window, double endTime);
 
+int Menu(sf::RenderWindow &window);
 
 void func()
 {
@@ -116,6 +118,9 @@ int main(int, char const**)
     glEnable(GL_TEXTURE_2D);
     
     while (window.isOpen()) {
+        
+        Menu(window);
+        
         double endTime = playRound(window);
         
         endRound(window, endTime);
@@ -135,24 +140,7 @@ double playRound(sf::RenderWindow &window){
     
     sf::Clock clock;
     
-    sf::CircleShape shape(50);
-    
-    shape.setFillColor(sf::Color::Green);
-    
-    shape.setOutlineThickness(5);
-    
-    shape.setOutlineColor(sf::Color::Blue);
-    
-    shape.setPosition(window.getSize().x/2, window.getSize().y/2);
-    
-    bool upB, downB, leftB, rightB;
-    
-    upB=false;
-    downB=false;
-    leftB=false;
-    rightB=false;
-    
-    double xDiff=0, yDiff=0;
+    Ship::Ship ship(window.getSize().x/2, window.getSize().y/2);
     
     Projectiles::Projectiles projectiles;
     
@@ -177,57 +165,14 @@ double playRound(sf::RenderWindow &window){
                 running=false;
                 exit(0);
             }
-            else if (event.type==sf::Event::KeyPressed){
-                if (event.key.code==sf::Keyboard::Up||event.key.code==sf::Keyboard::W) {
-                    upB=true;
-                }
-                else if (event.key.code==sf::Keyboard::Down||event.key.code==sf::Keyboard::S) {
-                    downB=true;
-                }
-                else if (event.key.code==sf::Keyboard::Left||event.key.code==sf::Keyboard::A) {
-                    leftB=true;
-                }
-                else if (event.key.code==sf::Keyboard::Right||event.key.code==sf::Keyboard::D) {
-                    rightB=true;
-                }
-            }
-            else if (event.type==sf::Event::KeyReleased){
-                if (event.key.code==sf::Keyboard::Up||event.key.code==sf::Keyboard::W) {
-                    upB=false;
-                }
-                else if (event.key.code==sf::Keyboard::Down||event.key.code==sf::Keyboard::S) {
-                    downB=false;
-                }
-                else if (event.key.code==sf::Keyboard::Left||event.key.code==sf::Keyboard::A) {
-                    leftB=false;
-                }
-                else if (event.key.code==sf::Keyboard::Right||event.key.code==sf::Keyboard::D) {
-                    rightB=false;
-                }
+            else if (event.type==sf::Event::KeyPressed||event.type==sf::Event::KeyReleased){
+                ship.moveShip(event);
             }
             else if (event.type==sf::Event::MouseButtonPressed){
-                sf::CircleShape temp(10);
-                double xOrig=shape.getPosition().x+shape.getRadius();
-                double yOrig=shape.getPosition().y+shape.getRadius();
-                temp.setPosition(xOrig, yOrig);
-                xDiff=event.mouseButton.x-temp.getRadius()-xOrig;
-                yDiff=event.mouseButton.y-temp.getRadius()-yOrig;
-                float norm=sqrt(xDiff*xDiff+yDiff*yDiff);
-                float speed=1.5;
-                xDiff=speed*xDiff/norm;
-                yDiff=speed*yDiff/norm;
-                projectiles.addProj(temp, xDiff, yDiff);
-                
+                projectiles.shoot(event, ship.getMarker());
             }
             
         }
-        if (upB && shape.getPosition().y>0) {shape.move(0, -1);}
-        if (downB && shape.getPosition().y<window.getSize().y-2*shape.getRadius()) shape.move(0, 1);
-        if (leftB && shape.getPosition().x>0) shape. move(-1, 0);
-        if (rightB && shape.getPosition().x<window.getSize().x-2*shape.getRadius()) shape.move(1, 0);
-        
-        //proj.move(xDiff, yDiff);
-        
         
         
         sf::Time elapsed = clock.getElapsedTime();
@@ -237,33 +182,38 @@ double playRound(sf::RenderWindow &window){
         double difficulty=1+timeSecs/10;
         
         if (clock.getElapsedTime().asSeconds()>0.5/difficulty) {
-            meteors.randomMeteor(window);
+            meteors.randomMeteor(window, 0.8*difficulty);
             timeHolder+=clock.getElapsedTime().asSeconds();
             clock.restart();
         }
         //meteors.randomMeteor(window);
         
-        projectiles.updateProjs();
+        //projectiles.updateProjs();
+        
+        sf::Thread threadP(&Projectiles::updateProjs, &projectiles);
+        threadP.launch();
+        
+        projectiles.checkForDeletion(window);
         
         meteors.updateProjs();
         
-        meteors.checkCollShots(projectiles.getProjs());
+        meteors.checkForDeletion(window);
         
-        window.clear();
+        ship.updateShip(window);
         
-        window.draw(textTime);
-        
-        window.draw(shape);
-        
-        //window.draw(proj);
-        
-        projectiles.drawProjs(window);
-        
-        meteors.drawProjs(window);
-        
-        if (meteors.checkCollision(shape)) {
+        if (meteors.checkCollision(ship.getMarker())) {
             running=false;
         }
+        
+        meteors.checkCollShots(projectiles.getProjs());
+        
+        //Clear and draw elements
+        window.clear();
+        
+        ship.drawShip(window);
+        window.draw(textTime);
+        projectiles.drawProjs(window);
+        meteors.drawProjs(window);
         
         window.display();
         
@@ -288,7 +238,7 @@ void endRound(sf::RenderWindow &window, double endTime){
         while (window.pollEvent(event)) {
             if (event.type==sf::Event::Closed) {
                 window.close();
-                return EXIT_SUCCESS;
+                exit(0);
             }
             if (event.type==sf::Event::KeyPressed){
                 ending=false;
@@ -304,6 +254,63 @@ void endRound(sf::RenderWindow &window, double endTime){
         textTime.setPosition((window.getSize().x-textTime.getLocalBounds().width)/2, (window.getSize().y+textEnd.getLocalBounds().height)/2);
         window.draw(textEnd);
         window.draw(textTime);
+        window.display();
+        
+    }
+    
+    return EXIT_SUCCESS;
+}
+
+int Menu(sf::RenderWindow &window){
+    bool menu=true;
+    
+    sf::Font font;
+    if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
+        return EXIT_FAILURE;
+    }
+    
+    sf::Text textTitle("TURBO-METEOR", font, 150);
+    sf::Text textOption1("NEW GAME",font, 150);
+    sf::RectangleShape option1Box;
+    textTitle.setFillColor(sf::Color::White);
+    textTitle.setPosition((window.getSize().x-textTitle.getLocalBounds().width)/2, 0);
+    textOption1.setFillColor(sf::Color::White);
+    sf::Vector2f textPos((window.getSize().x-textOption1.getLocalBounds().width)/2, window.getSize().y/2);
+    textOption1.setPosition(textPos);
+    
+    while (menu) {
+        
+        sf::Event event;
+        
+        
+        
+        while (window.pollEvent(event)) {
+            if (event.type==sf::Event::Closed) {
+                window.close();
+                exit(0);
+            }
+            if (event.type==sf::Event::MouseButtonPressed){
+                if ((textOption1.getPosition().x<event.mouseButton.x)&&(event.mouseButton.x<textOption1.getPosition().x+textOption1.getLocalBounds().width)) {
+                    if ((textOption1.getPosition().y+textOption1.getLocalBounds().height/2<event.mouseButton.y)&&(event.mouseButton.y<textOption1.getPosition().y+3*textOption1.getLocalBounds().height/2)) {
+                        textOption1.setFillColor(sf::Color::Red);
+                    }
+                }
+            }
+            if (event.type==sf::Event::MouseButtonReleased){
+                if ((textOption1.getPosition().x<event.mouseButton.x)&&(event.mouseButton.x<textOption1.getPosition().x+textOption1.getLocalBounds().width)) {
+                    if ((textOption1.getPosition().y+textOption1.getLocalBounds().height/2<event.mouseButton.y)&&(event.mouseButton.y<textOption1.getPosition().y+3*textOption1.getLocalBounds().height/2)) {
+                        menu=false;
+                    }
+                }
+            }
+        }
+        
+        window.clear();
+        
+        
+        window.draw(option1Box);
+        window.draw(textTitle);
+        window.draw(textOption1);
         window.display();
         
     }
