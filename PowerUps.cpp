@@ -6,9 +6,9 @@
 //  Copyright © 2016 HBanks. All rights reserved.
 //
 
-#include "PowerUp.hpp"
+#include "PowerUps.hpp"
 
-void PowerUp::randomPowerUp(sf::RenderWindow &window, float speed){
+void PowerUps::randomPowerUp(sf::RenderWindow &window, float speed){
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(0, window.getSize().x);
@@ -29,7 +29,7 @@ void PowerUp::randomPowerUp(sf::RenderWindow &window, float speed){
     addProj(temp, xMove, yMove);
 }
 
-bool PowerUp::checkCollision(sf::CircleShape target){
+bool PowerUps::checkCollision(sf::CircleShape target){
     for (auto &meteor: getProjs()){
         double m_x=meteor.getPosition().x+meteor.getRadius();
         double t_x=target.getPosition().x+target.getRadius();

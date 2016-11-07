@@ -25,6 +25,7 @@
 #include "Projectiles.hpp"
 #include "Meteors.hpp"
 #include "Ship.hpp"
+#include "PowerUps.hpp"
 
 
 // Here is a small helper for you! Have a look.
@@ -93,11 +94,7 @@ int main(int, char const**)
     //window.setVerticalSyncEnabled(true); // call it once, after creating the window
 
     // Load a sprite to display
-    sf::Texture texture;
-    if (!texture.loadFromFile(resourcePath() + "cute_image.jpg")) {
-        return EXIT_FAILURE;
-    }
-    sf::Sprite sprite(texture);
+    
 
     // Load a music to play
     sf::Music music;
@@ -119,6 +116,7 @@ int main(int, char const**)
     
     while (window.isOpen()) {
         
+        
         Menu(window);
         
         double endTime = playRound(window);
@@ -139,6 +137,9 @@ double playRound(sf::RenderWindow &window){
     }
     
     sf::Clock clock;
+    sf::Clock clockPerm;
+    
+    double timeLastShot=0;
     
     Ship::Ship ship(window.getSize().x/2, window.getSize().y/2);
     
@@ -146,14 +147,26 @@ double playRound(sf::RenderWindow &window){
     
     Meteors::Meteors meteors;
     
+    PowerUps::PowerUps powerUps;
+    
     sf::Text textTime("Hello World", font, 50);
     textTime.setFillColor(sf::Color::Red);
     
-    double timeHolder=0;
     double timeSecs;
+    double timeLastMeteor=0;
+    double timeLastPowerUp=0;
     
     bool running=true;
     
+    sf::Texture texture;
+    if (!texture.loadFromFile(resourcePath() + "c40000.png")) {
+        return EXIT_FAILURE;
+    }
+    
+    //sf::Texture texture;
+    //texture.loadFromImage(image);
+    
+    //sf::Sprite sprite(texture);
     
     while (running) {
         
@@ -169,35 +182,51 @@ double playRound(sf::RenderWindow &window){
                 ship.moveShip(event);
             }
             else if (event.type==sf::Event::MouseButtonPressed){
-                projectiles.shoot(event, ship.getMarker());
+                if (clockPerm.getElapsedTime().asSeconds()-timeLastShot>ship.getMinShotTime()) {
+                    float xPos=ship.getMarker().getPosition().x;
+                    float yPos=ship.getMarker().getPosition().y;
+                    float rad=ship.getMarker().getRadius();
+                    projectiles.shoot(event.mouseButton.x, event.mouseButton.y, xPos, yPos, rad);
+                    timeLastShot=clockPerm.getElapsedTime().asSeconds();
+                }
             }
             
         }
         
         
         sf::Time elapsed = clock.getElapsedTime();
-        timeSecs=elapsed.asSeconds()+timeHolder;
+        timeSecs=elapsed.asSeconds();
         textTime.setString(std::to_string(timeSecs));
         
         double difficulty=1+timeSecs/10;
         
-        if (clock.getElapsedTime().asSeconds()>0.5/difficulty) {
+        if (timeSecs-timeLastMeteor>0.5/difficulty) {
             meteors.randomMeteor(window, 0.8*difficulty);
-            timeHolder+=clock.getElapsedTime().asSeconds();
-            clock.restart();
+            timeLastMeteor=timeSecs;
+        }
+        
+        if (timeSecs-timeLastPowerUp>5) {
+            powerUps.randomPowerUp(window, 0.8);
+            timeLastPowerUp=timeSecs;
         }
         //meteors.randomMeteor(window);
         
-        //projectiles.updateProjs();
+        projectiles.updateProjs();
         
-        sf::Thread threadP(&Projectiles::updateProjs, &projectiles);
-        threadP.launch();
+        //sf::Thread threadP(&Projectiles::updateProjs, &projectiles);
+        //threadP.launch();
         
         projectiles.checkForDeletion(window);
         
-        meteors.updateProjs();
+        meteors.updateProjsSprites();
         
-        meteors.checkForDeletion(window);
+        meteors.checkCollShots(projectiles.getProjs());
+        
+        meteors.checkForDeletionSprites(window);
+        
+        powerUps.updateProjs();
+        
+        powerUps.checkForDeletion(window);
         
         ship.updateShip(window);
         
@@ -205,7 +234,7 @@ double playRound(sf::RenderWindow &window){
             running=false;
         }
         
-        meteors.checkCollShots(projectiles.getProjs());
+        
         
         //Clear and draw elements
         window.clear();
@@ -213,7 +242,9 @@ double playRound(sf::RenderWindow &window){
         ship.drawShip(window);
         window.draw(textTime);
         projectiles.drawProjs(window);
-        meteors.drawProjs(window);
+        meteors.drawProjsSprites(window);
+        powerUps.drawProjs(window);
+        //window.draw(sprite);
         
         window.display();
         

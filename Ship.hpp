@@ -29,10 +29,13 @@ public:
     void updateShip(sf::RenderWindow &window);
     void moveShip(sf::Event &event);
     sf::CircleShape getMarker();
+    void setMinShotTime(float time);
+    float getMinShotTime();
     
 protected:
     sf::CircleShape markerShip;
     bool upB, downB, leftB, rightB;
+    float minShotTime;
     
     
 private:

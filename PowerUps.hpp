@@ -21,7 +21,7 @@
 #include <random>
 
 
-class PowerUp : public Projectiles{
+class PowerUps : public Projectiles{
 public:
     void randomPowerUp(sf::RenderWindow &window, float speed);
     bool checkCollision(sf::CircleShape target);

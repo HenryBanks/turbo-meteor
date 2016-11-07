@@ -28,6 +28,9 @@ Ship::Ship(float xPos, float yPos){
     downB=false;
     leftB=false;
     rightB=false;
+    
+    minShotTime=0.3;
+    
 }
 
 Ship::~Ship(){
@@ -80,4 +83,12 @@ void Ship::moveShip(sf::Event &event){
 
 sf::CircleShape Ship::getMarker(){
     return markerShip;
+}
+
+void Ship::setMinShotTime(float time){
+    minShotTime=time;
+}
+
+float Ship::getMinShotTime(){
+    return minShotTime;
 }

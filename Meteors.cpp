@@ -26,7 +26,7 @@ void Meteors::randomMeteor(sf::RenderWindow &window, float speed){
     sf::CircleShape temp(20);
     temp.setFillColor(sf::Color::Red);
     temp.setPosition(xStart, yStart);
-    addProj(temp, xMove, yMove);
+    addProjSprite(temp, xMove, yMove);
 }
 
 bool Meteors::checkCollision(sf::CircleShape target){
@@ -57,6 +57,7 @@ void Meteors::checkCollShots(std::vector<sf::CircleShape> shotVec){
             if (distance<(shot.getRadius()+meteor.getRadius())) {
                 vecProjs.erase(vecProjs.begin()+i);
                 vecVels.erase(vecVels.begin()+i);
+                vecSprites.erase(vecSprites.begin()+i);
             }
         }
     }
