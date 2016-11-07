@@ -224,6 +224,8 @@ double playRound(sf::RenderWindow &window){
         
         meteors.checkForDeletionSprites(window);
         
+        powerUps.checkCollision(ship);
+        
         powerUps.updateProjs();
         
         powerUps.checkForDeletion(window);

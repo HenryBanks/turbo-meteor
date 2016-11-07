@@ -29,17 +29,21 @@ void PowerUps::randomPowerUp(sf::RenderWindow &window, float speed){
     addProj(temp, xMove, yMove);
 }
 
-bool PowerUps::checkCollision(sf::CircleShape target){
-    for (auto &meteor: getProjs()){
-        double m_x=meteor.getPosition().x+meteor.getRadius();
+void PowerUps::checkCollision(Ship::Ship &ship){
+    sf::CircleShape target=ship.getMarker();
+    
+    for (int i=0; i<vecProjs.size(); i++) {
+        sf::CircleShape powerUp=vecProjs[i];
+        double m_x=powerUp.getPosition().x+powerUp.getRadius();
         double t_x=target.getPosition().x+target.getRadius();
-        double m_y=meteor.getPosition().y+meteor.getRadius();
+        double m_y=powerUp.getPosition().y+powerUp.getRadius();
         double t_y=target.getPosition().y+target.getRadius();
         double distance=sqrt((m_x-t_x)*(m_x-t_x)+(m_y-t_y)*(m_y-t_y));
         //std::cout << distance << std::endl;
-        if (distance<(target.getRadius()+meteor.getRadius())) {
-            return true;
+        if (distance<(target.getRadius()+powerUp.getRadius())) {
+            ship.setMinShotTime(ship.getMinShotTime()/2);
+            vecProjs.erase(vecProjs.begin()+i);
+            vecVels.erase(vecVels.begin()+i);
         }
     }
-    return false;
 }

@@ -19,12 +19,13 @@
 #include <math.h>
 #include "Projectiles.hpp"
 #include <random>
+#include "Ship.hpp"
 
 
 class PowerUps : public Projectiles{
 public:
     void randomPowerUp(sf::RenderWindow &window, float speed);
-    bool checkCollision(sf::CircleShape target);
+    void checkCollision(Ship::Ship &ship);
     
 private:
     

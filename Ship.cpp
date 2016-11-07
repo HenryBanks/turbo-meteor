@@ -14,9 +14,11 @@ Ship::Ship(){
 
 Ship::Ship(float xPos, float yPos){
     
-    markerShip.setRadius(50);
+    double radius=45.5;
     
-    markerShip.setFillColor(sf::Color::Green);
+    markerShip.setRadius(radius);
+    
+    markerShip.setFillColor(sf::Color::Transparent);
     
     markerShip.setOutlineThickness(5);
     
@@ -31,6 +33,17 @@ Ship::Ship(float xPos, float yPos){
     
     minShotTime=0.3;
     
+    if (!texture.loadFromFile(resourcePath() + "ufoGreen.png")) {
+        return EXIT_FAILURE;
+    }
+    
+    sprite.setTexture(texture);
+    
+    //sprite.setScale(100, 100);
+    
+    
+    sprite.setPosition(xPos, yPos);
+    
 }
 
 Ship::~Ship(){
@@ -39,13 +52,22 @@ Ship::~Ship(){
 
 void Ship::drawShip(sf::RenderWindow &window){
     window.draw(markerShip);
+    window.draw(sprite);
 }
 
 void Ship::updateShip(sf::RenderWindow &window){
-    if (upB && markerShip.getPosition().y>0) {markerShip.move(0, -1);}
-    if (downB && markerShip.getPosition().y<window.getSize().y-2*markerShip.getRadius()) markerShip.move(0, 1);
-    if (leftB && markerShip.getPosition().x>0) markerShip.move(-1, 0);
-    if (rightB && markerShip.getPosition().x<window.getSize().x-2*markerShip.getRadius()) markerShip.move(1, 0);
+    if (upB && markerShip.getPosition().y>0) {
+        markerShip.move(0, -1);
+        sprite.move(0, -1);}
+    if (downB && markerShip.getPosition().y<window.getSize().y-2*markerShip.getRadius()){
+        markerShip.move(0, 1);
+        sprite.move(0, 1);}
+    if (leftB && markerShip.getPosition().x>0){
+        markerShip.move(-1, 0);
+        sprite.move(-1, 0);}
+    if (rightB && markerShip.getPosition().x<window.getSize().x-2*markerShip.getRadius()){
+        markerShip.move(1, 0);
+        sprite.move(1, 0);}
 }
 
 void Ship::moveShip(sf::Event &event){

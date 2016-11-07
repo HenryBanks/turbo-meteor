@@ -34,9 +34,10 @@ public:
     
 protected:
     sf::CircleShape markerShip;
+    sf::Sprite sprite;
     bool upB, downB, leftB, rightB;
     float minShotTime;
-    
+    sf::Texture texture;
     
 private:
     
