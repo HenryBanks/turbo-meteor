@@ -31,7 +31,7 @@ Ship::Ship(float xPos, float yPos){
     leftB=false;
     rightB=false;
     
-    minShotTime=0.3;
+    shotTime=0.5;
     
     if (!texture.loadFromFile(resourcePath() + "ufoGreen.png")) {
         return EXIT_FAILURE;
@@ -43,6 +43,10 @@ Ship::Ship(float xPos, float yPos){
     
     
     sprite.setPosition(xPos, yPos);
+    
+    score=0;
+    
+    speed=1;
     
 }
 
@@ -107,10 +111,32 @@ sf::CircleShape Ship::getMarker(){
     return markerShip;
 }
 
-void Ship::setMinShotTime(float time){
-    minShotTime=time;
+void Ship::setShotTime(float time){
+    if (time>=minShotTime) {
+        shotTime=time;
+    }
 }
 
 float Ship::getMinShotTime(){
     return minShotTime;
+}
+
+float Ship::getShotTime(){
+    return shotTime;
+}
+
+int Ship::getScore(){
+    return score;
+}
+
+void Ship::setScore(int newScore){
+    score=newScore;
+}
+
+int Ship::getSpeed(){
+    return speed;
+}
+
+void Ship::setSpeed(int newSpeed){
+    speed=newSpeed;
 }

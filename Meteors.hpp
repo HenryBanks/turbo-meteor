@@ -19,13 +19,14 @@
 #include <math.h>
 #include "Projectiles.hpp"
 #include <random>
+#include "Ship.hpp"
 
 
 class Meteors : public Projectiles{
 public:
     void randomMeteor(sf::RenderWindow &window, float speed);
-    bool checkCollision(sf::CircleShape target);
-    void checkCollShots(std::vector<sf::CircleShape> shotVec);
+    void addProjSprite(sf::CircleShape newProj, float xMove, float yMove);
+    Meteors();
     
 private:
     

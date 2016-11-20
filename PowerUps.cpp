@@ -8,6 +8,32 @@
 
 #include "PowerUps.hpp"
 
+PowerUps::PowerUps(){
+    if (!texture.loadFromFile(resourcePath() + "powerupBlue_bolt.png")) {
+        return EXIT_FAILURE;
+    }
+}
+
+void PowerUps::addProjSprite(sf::CircleShape newProj, float xMove, float yMove){
+    vecProjs.push_back(newProj);
+    if (vecProjs.size()>=50){
+        vecProjs.erase(vecProjs.begin());
+        vecVels.erase(vecVels.begin());
+    }
+    std::vector<float> temp;
+    temp.push_back(xMove);
+    temp.push_back(yMove);
+    vecVels.push_back(temp);
+    
+    sf::Sprite sprite(texture);
+    double scaleUp=2*newProj.getRadius()/sprite.getLocalBounds().width;
+    std::cout << "ScaleUp: " << scaleUp << std::endl;
+    sprite.setScale(scaleUp, scaleUp);
+    //sprite.setPosition(newProj.getPosition().x-2*newProj.getRadius(), newProj.getPosition().y-2*newProj.getRadius());
+    sprite.setPosition(newProj.getPosition().x, newProj.getPosition().y);
+    vecSprites.push_back(sprite);
+}
+
 void PowerUps::randomPowerUp(sf::RenderWindow &window, float speed){
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -26,7 +52,7 @@ void PowerUps::randomPowerUp(sf::RenderWindow &window, float speed){
     sf::CircleShape temp(20);
     temp.setFillColor(sf::Color::Blue);
     temp.setPosition(xStart, yStart);
-    addProj(temp, xMove, yMove);
+    addProjSprite(temp, xMove, yMove);
 }
 
 void PowerUps::checkCollision(Ship::Ship &ship){
@@ -41,9 +67,11 @@ void PowerUps::checkCollision(Ship::Ship &ship){
         double distance=sqrt((m_x-t_x)*(m_x-t_x)+(m_y-t_y)*(m_y-t_y));
         //std::cout << distance << std::endl;
         if (distance<(target.getRadius()+powerUp.getRadius())) {
-            ship.setMinShotTime(ship.getMinShotTime()/2);
+            ship.setShotTime(ship.getShotTime()-0.1);
             vecProjs.erase(vecProjs.begin()+i);
             vecVels.erase(vecVels.begin()+i);
+            vecSprites.erase(vecSprites.begin()+i);
+            ship.setScore(ship.getScore()+10);
         }
     }
 }

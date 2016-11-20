@@ -8,6 +8,29 @@
 
 #include "Meteors.hpp"
 
+Meteors::Meteors(){
+    if (!texture.loadFromFile(resourcePath() + "c40000.png")) {
+        return EXIT_FAILURE;
+    }
+}
+
+void Meteors::addProjSprite(sf::CircleShape newProj, float xMove, float yMove){
+    vecProjs.push_back(newProj);
+    if (vecProjs.size()>=50){
+        vecProjs.erase(vecProjs.begin());
+        vecVels.erase(vecVels.begin());
+    }
+    std::vector<float> temp;
+    temp.push_back(xMove);
+    temp.push_back(yMove);
+    vecVels.push_back(temp);
+    
+    sf::Sprite sprite(texture);
+    sprite.setPosition(newProj.getPosition().x-2*newProj.getRadius(), newProj.getPosition().y-2*newProj.getRadius());
+    //sprite.setPosition(newProj.getPosition().x, newProj.getPosition().y);
+    vecSprites.push_back(sprite);
+}
+
 void Meteors::randomMeteor(sf::RenderWindow &window, float speed){
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -17,7 +40,7 @@ void Meteors::randomMeteor(sf::RenderWindow &window, float speed){
     xStart=dis(gen);
     xEnd=dis(gen);
     yStart=0;
-    yEnd=window.sf::Window::getSize().y;
+    yEnd=window.getSize().y;
     xMove=xEnd-xStart;
     yMove=yEnd-yStart;
     float norm=sqrt(xMove*xMove+yMove*yMove);
@@ -27,38 +50,4 @@ void Meteors::randomMeteor(sf::RenderWindow &window, float speed){
     temp.setFillColor(sf::Color::Red);
     temp.setPosition(xStart, yStart);
     addProjSprite(temp, xMove, yMove);
-}
-
-bool Meteors::checkCollision(sf::CircleShape target){
-    for (auto &meteor: getProjs()){
-        double m_x=meteor.getPosition().x+meteor.getRadius();
-        double t_x=target.getPosition().x+target.getRadius();
-        double m_y=meteor.getPosition().y+meteor.getRadius();
-        double t_y=target.getPosition().y+target.getRadius();
-        double distance=sqrt((m_x-t_x)*(m_x-t_x)+(m_y-t_y)*(m_y-t_y));
-        //std::cout << distance << std::endl;
-        if (distance<(target.getRadius()+meteor.getRadius())) {
-            return true;
-        }
-    }
-    return false;
-}
-
-void Meteors::checkCollShots(std::vector<sf::CircleShape> shotVec){
-    for (int i=0; i<vecProjs.size(); i++){
-        sf::CircleShape meteor = vecProjs[i];
-        double m_x=meteor.getPosition().x+meteor.getRadius();
-        double m_y=meteor.getPosition().y+meteor.getRadius();
-        for (auto &shot: shotVec){
-            double t_x=shot.getPosition().x+shot.getRadius();
-            double t_y=shot.getPosition().y+shot.getRadius();
-            double distance=sqrt((m_x-t_x)*(m_x-t_x)+(m_y-t_y)*(m_y-t_y));
-            //std::cout << distance << std::endl;
-            if (distance<(shot.getRadius()+meteor.getRadius())) {
-                vecProjs.erase(vecProjs.begin()+i);
-                vecVels.erase(vecVels.begin()+i);
-                vecSprites.erase(vecSprites.begin()+i);
-            }
-        }
-    }
 }

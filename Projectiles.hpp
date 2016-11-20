@@ -17,6 +17,7 @@
 #include <math.h>
 #include <vector>
 #include "ResourcePath.hpp"
+#include "Ship.hpp"
 
 
 #ifndef Projectiles_hpp
@@ -27,7 +28,7 @@ public:
     Projectiles();
     virtual ~Projectiles();
     void addProj(sf::CircleShape newProj, float xMove, float yMove);
-    void addProjSprite(sf::CircleShape newProj, float xMove, float yMove);
+    //void addProjSprite(sf::CircleShape newProj, float xMove, float yMove);
     void drawProjs(sf::RenderWindow &window);
     void drawProjsSprites(sf::RenderWindow &window);
     void updateProjs();
@@ -38,12 +39,17 @@ public:
     int getNumProjs();
     void shoot(float xf, float yf, float xi, float yi, float rad);
     void shootSpecial(sf::Event event, sf::CircleShape markerShip);
+    bool checkCollision(sf::CircleShape target);
+    void checkCollShots(std::vector<sf::CircleShape> shotVec, Ship::Ship &ship);
     
 protected:
     std::vector<sf::CircleShape> vecProjs;
     std::vector<std::vector<float>> vecVels;
     std::vector<sf::Sprite> vecSprites;
     sf::Texture texture;
+    sf::SoundBuffer shotSoundBuffer;
+    sf::Sound shotSound;
+    int speed;
     
 private:
     

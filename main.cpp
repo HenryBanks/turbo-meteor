@@ -26,47 +26,18 @@
 #include "Meteors.hpp"
 #include "Ship.hpp"
 #include "PowerUps.hpp"
+#include "Enemy.hpp"
+#include "Enemies.hpp"
 
 
 // Here is a small helper for you! Have a look.
 #include "ResourcePath.hpp"
 
-sf::Mutex mutex;
+int playRound(sf::RenderWindow &window);
 
-double playRound(sf::RenderWindow &window);
-
-void endRound(sf::RenderWindow &window, double endTime);
+void endRound(sf::RenderWindow &window, int endScore);
 
 int Menu(sf::RenderWindow &window);
-
-void func()
-{
-    // this function is started when thread.launch() is called
-    mutex.lock();
-    
-    
-    for (int i = 0; i < 10; ++i)
-        std::cout << "I'm thread number one" << std::endl;
-    
-    mutex.unlock();
-}
-
-void renderingThread(sf::Window* window)
-{
-    // activate the window's context
-    window->setActive(true);
-    
-    // the rendering loop
-    while (window->isOpen())
-    {
-        // draw...
-        
-        // end the current frame -- this is a rendering function (it requires the context to be active)
-        window->display();
-    }
-}
-
-
 
 
 int main(int, char const**)
@@ -98,7 +69,7 @@ int main(int, char const**)
 
     // Load a music to play
     sf::Music music;
-    if (!music.openFromFile(resourcePath() + "nice_music.ogg")) {
+    if (!music.openFromFile(resourcePath() + "background.wav")) {
         return EXIT_FAILURE;
     }
     
@@ -116,12 +87,13 @@ int main(int, char const**)
     
     while (window.isOpen()) {
         
+        music.play();
         
         Menu(window);
         
-        double endTime = playRound(window);
+        int endScore = playRound(window);
         
-        endRound(window, endTime);
+        endRound(window, endScore);
     }
     
     
@@ -129,7 +101,7 @@ int main(int, char const**)
     return EXIT_SUCCESS;
 }
 
-double playRound(sf::RenderWindow &window){
+int playRound(sf::RenderWindow &window){
     
     sf::Font font;
     if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
@@ -149,12 +121,23 @@ double playRound(sf::RenderWindow &window){
     
     PowerUps::PowerUps powerUps;
     
+    Enemies::Enemies enemies;
+    
     sf::Text textTime("Hello World", font, 50);
-    textTime.setFillColor(sf::Color::Red);
+    textTime.setFillColor(sf::Color::Green);
+    
+    sf::Text textScore("Hello World", font, 50);
+    textScore.setFillColor(sf::Color::Green);
+    textScore.setPosition(window.getSize().x/2, 0);
+    
+    sf::Text textSpeed("ShotTime: 0.001", font, 50);
+    textSpeed.setFillColor(sf::Color::Green);
+    textSpeed.setPosition(window.getSize().x-textSpeed.getLocalBounds().width, 0);
     
     double timeSecs;
     double timeLastMeteor=0;
     double timeLastPowerUp=0;
+    double timeLastEnemy=0;
     
     bool running=true;
     
@@ -167,6 +150,8 @@ double playRound(sf::RenderWindow &window){
     //texture.loadFromImage(image);
     
     //sf::Sprite sprite(texture);
+    
+    bool shooting=false;
     
     while (running) {
         
@@ -182,13 +167,10 @@ double playRound(sf::RenderWindow &window){
                 ship.moveShip(event);
             }
             else if (event.type==sf::Event::MouseButtonPressed){
-                if (clockPerm.getElapsedTime().asSeconds()-timeLastShot>ship.getMinShotTime()) {
-                    float xPos=ship.getMarker().getPosition().x;
-                    float yPos=ship.getMarker().getPosition().y;
-                    float rad=ship.getMarker().getRadius();
-                    projectiles.shoot(event.mouseButton.x, event.mouseButton.y, xPos, yPos, rad);
-                    timeLastShot=clockPerm.getElapsedTime().asSeconds();
-                }
+                shooting=true;
+            }
+            else if (event.type==sf::Event::MouseButtonReleased){
+                shooting=false;
             }
             
         }
@@ -196,7 +178,11 @@ double playRound(sf::RenderWindow &window){
         
         sf::Time elapsed = clock.getElapsedTime();
         timeSecs=elapsed.asSeconds();
-        textTime.setString(std::to_string(timeSecs));
+        textTime.setString("Time: " + std::to_string(timeSecs).substr(0,4));
+        
+        textScore.setString("Score: " + std::to_string(ship.getScore()));
+        //std::cout << "Speed: " + std::to_string(ship.getShotTime()) << std::endl;
+        textSpeed.setString("shotTime: " + std::to_string(ship.getShotTime()).substr(0,3));
         
         double difficulty=1+timeSecs/10;
         
@@ -209,7 +195,28 @@ double playRound(sf::RenderWindow &window){
             powerUps.randomPowerUp(window, 0.8);
             timeLastPowerUp=timeSecs;
         }
+        
+        if (timeSecs-timeLastEnemy>5) {
+            enemies.addEnemy(window, 0.4);
+            timeLastEnemy=timeSecs;
+            enemies.shootAll(ship);
+        }
+        
+        if ((timeSecs-timeLastShot>ship.getShotTime())&&shooting) {
+            float xPos=ship.getMarker().getPosition().x;
+            float yPos=ship.getMarker().getPosition().y;
+            float rad=ship.getMarker().getRadius();
+            //std::cout << sf::Mouse::getPosition(window).x << " " << sf::Mouse::getPosition(window).y << std::endl;
+            projectiles.shoot(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y, xPos, yPos, rad);
+            timeLastShot=timeSecs;
+        }
         //meteors.randomMeteor(window);
+        
+        enemies.updateProjsSprites(window);
+        
+        enemies.checkForDeletion(window);
+        
+        enemies.checkCollShots(projectiles.getProjs(), ship);
         
         projectiles.updateProjs();
         
@@ -220,19 +227,19 @@ double playRound(sf::RenderWindow &window){
         
         meteors.updateProjsSprites();
         
-        meteors.checkCollShots(projectiles.getProjs());
-        
         meteors.checkForDeletionSprites(window);
+        
+        meteors.checkCollShots(projectiles.getProjs(), ship);
         
         powerUps.checkCollision(ship);
         
-        powerUps.updateProjs();
+        powerUps.updateProjsSprites();
         
-        powerUps.checkForDeletion(window);
+        powerUps.checkForDeletionSprites(window);
         
         ship.updateShip(window);
         
-        if (meteors.checkCollision(ship.getMarker())) {
+        if (meteors.checkCollision(ship.getMarker())||(enemies.checkCollision(ship.getMarker()))) {
             running=false;
         }
         
@@ -243,9 +250,12 @@ double playRound(sf::RenderWindow &window){
         
         ship.drawShip(window);
         window.draw(textTime);
+        window.draw(textScore);
+        window.draw(textSpeed);
         projectiles.drawProjs(window);
         meteors.drawProjsSprites(window);
-        powerUps.drawProjs(window);
+        powerUps.drawProjsSprites(window);
+        enemies.drawProjsSprites(window);
         //window.draw(sprite);
         
         window.display();
@@ -253,10 +263,10 @@ double playRound(sf::RenderWindow &window){
         
     }
 
-    return timeSecs;
+    return ship.getScore();
 }
 
-void endRound(sf::RenderWindow &window, double endTime){
+void endRound(sf::RenderWindow &window, int endScore){
     bool ending=true;
     
     sf::Font font;
@@ -273,14 +283,14 @@ void endRound(sf::RenderWindow &window, double endTime){
                 window.close();
                 exit(0);
             }
-            if (event.type==sf::Event::KeyPressed){
+            if (event.type==sf::Event::KeyPressed||event.type==sf::Event::MouseButtonPressed){
                 ending=false;
             }
         }
         
         window.clear();
         sf::Text textEnd("GAME OVER", font, 150);
-        sf::Text textTime("TIME: " + std::to_string(endTime),font, 150);
+        sf::Text textTime("SCORE: " + std::to_string(endScore),font, 150);
         textEnd.setFillColor(sf::Color::White);
         textEnd.setPosition((window.getSize().x-textEnd.getLocalBounds().width)/2, (window.getSize().y-textEnd.getLocalBounds().height)/2);
         textTime.setFillColor(sf::Color::White);
@@ -295,6 +305,7 @@ void endRound(sf::RenderWindow &window, double endTime){
 }
 
 int Menu(sf::RenderWindow &window){
+    
     bool menu=true;
     
     sf::Font font;
@@ -304,13 +315,17 @@ int Menu(sf::RenderWindow &window){
     
     sf::Text textTitle("TURBO-METEOR", font, 150);
     sf::Text textOption1("NEW GAME",font, 150);
-    sf::RectangleShape option1Box;
     textTitle.setFillColor(sf::Color::White);
     textTitle.setPosition((window.getSize().x-textTitle.getLocalBounds().width)/2, 0);
     textOption1.setFillColor(sf::Color::White);
     sf::Vector2f textPos((window.getSize().x-textOption1.getLocalBounds().width)/2, window.getSize().y/2);
     textOption1.setPosition(textPos);
-    
+    sf::RectangleShape option1Box(sf::Vector2f(textOption1.getLocalBounds().width*1.03,textOption1.getLocalBounds().height*1.05));
+    option1Box.setFillColor(sf::Color::Transparent);
+    option1Box.setPosition((window.getSize().x-textOption1.getLocalBounds().width)/2, window.getSize().y/2+textOption1.getLocalBounds().height*0.40);
+    option1Box.setOutlineColor(sf::Color::White);
+    option1Box.setOutlineThickness(10);
+        
     while (menu) {
         
         sf::Event event;

@@ -17,7 +17,8 @@
 #include <SFML/System.hpp>
 #include <SFML/OpenGL.hpp>
 #include <math.h>
-#include "Projectiles.hpp"
+#include "ResourcePath.hpp"
+//#include "Projectiles.hpp"
 #include <random>
 
 class Ship{
@@ -29,15 +30,23 @@ public:
     void updateShip(sf::RenderWindow &window);
     void moveShip(sf::Event &event);
     sf::CircleShape getMarker();
-    void setMinShotTime(float time);
+    void setShotTime(float time);
+    float getShotTime();
     float getMinShotTime();
+    int getScore();
+    void setScore(int newScore);
+    int getSpeed();
+    void setSpeed(int newSpeed);
     
 protected:
     sf::CircleShape markerShip;
     sf::Sprite sprite;
     bool upB, downB, leftB, rightB;
-    float minShotTime;
+    float shotTime;
+    float minShotTime=0.2;
     sf::Texture texture;
+    int score;
+    int speed;
     
 private:
     
