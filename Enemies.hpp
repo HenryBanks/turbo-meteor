@@ -35,7 +35,7 @@ public:
     void checkCollShots(std::vector<sf::CircleShape> shotVec, Ship &ship);
 
 protected:
-
+    
 private:
     std::vector<Enemy> enemies;
     sf::Texture texture;

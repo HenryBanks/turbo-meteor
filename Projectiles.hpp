@@ -6,6 +6,8 @@
 //  Copyright © 2016 HBanks. All rights reserved.
 //
 
+#ifndef Projectiles_hpp
+#define Projectiles_hpp
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
@@ -20,8 +22,7 @@
 #include "Ship.hpp"
 
 
-#ifndef Projectiles_hpp
-#define Projectiles_hpp
+
 
 class Projectiles{
 public:
@@ -41,7 +42,7 @@ public:
     void shootSpecial(sf::Event event, sf::CircleShape markerShip);
     bool checkCollision(sf::CircleShape target);
     void checkCollShots(std::vector<sf::CircleShape> shotVec, Ship &ship);
-
+    
 protected:
     std::vector<sf::CircleShape> vecProjs;
     std::vector<std::vector<float> > vecVels;
@@ -50,11 +51,11 @@ protected:
     sf::SoundBuffer shotSoundBuffer;
     sf::Sound shotSound;
     int speed;
-
+    
 private:
-
-
-
+    
+    
+    
 };
 
 #endif /* Projectiles_hpp */
