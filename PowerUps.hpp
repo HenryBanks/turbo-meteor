@@ -25,7 +25,7 @@
 class PowerUps : public Projectiles{
 public:
     void randomPowerUp(sf::RenderWindow &window, float speed);
-    void checkCollision(Ship::Ship &ship);
+    void checkCollision(Ship &ship);
     PowerUps();
     void addProjSprite(sf::CircleShape newProj, float xMove, float yMove);
     

@@ -88,7 +88,7 @@ sf::CircleShape Enemy::getMarker(){
     return markerShip;
 }
 
-void Enemy::shoot(Ship::Ship &ship){
+void Enemy::shoot(Ship &ship){
     float x_i=markerShip.getPosition().x;
     float y_i=markerShip.getPosition().y;
     float x_f=ship.getMarker().getPosition().x;

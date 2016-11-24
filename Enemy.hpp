@@ -29,7 +29,7 @@ public:
     virtual ~Enemy();
     void drawEnemy(sf::RenderWindow &window);
     void updateEnemy(sf::RenderWindow &window);
-    void shoot(Ship::Ship& ship);
+    void shoot(Ship& ship);
     sf::CircleShape getMarker();
     Projectiles getProjs();
     

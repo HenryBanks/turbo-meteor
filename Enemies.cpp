@@ -49,7 +49,7 @@ void Enemies::checkForDeletion(sf::RenderWindow &window){
     }
 }
 
-void Enemies::shootAll(Ship::Ship &ship){
+void Enemies::shootAll(Ship &ship){
     for (auto &enemy: enemies){
         enemy.shoot(ship);
     }
@@ -74,7 +74,7 @@ bool Enemies::checkCollision(sf::CircleShape target){
     return false;
 }
 
-void Enemies::checkCollShots(std::vector<sf::CircleShape> shotVec, Ship::Ship &ship){
+void Enemies::checkCollShots(std::vector<sf::CircleShape> shotVec, Ship &ship){
     for (int i=0; i<enemies.size(); i++){
         sf::CircleShape proj = enemies[i].getMarker();
         double m_x=proj.getPosition().x+proj.getRadius();

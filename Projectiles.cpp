@@ -183,7 +183,7 @@ bool Projectiles::checkCollision(sf::CircleShape target){
     return false;
 }
 
-void Projectiles::checkCollShots(std::vector<sf::CircleShape> shotVec, Ship::Ship &ship){
+void Projectiles::checkCollShots(std::vector<sf::CircleShape> shotVec, Ship &ship){
     for (int i=0; i<vecProjs.size(); i++){
         sf::CircleShape proj = vecProjs[i];
         double m_x=proj.getPosition().x+proj.getRadius();

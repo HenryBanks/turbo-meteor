@@ -80,10 +80,6 @@ int main(int, char const**)
     settings.majorVersion = 3;
     settings.minorVersion = 0;
     
-    //sf::Window windowGL(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default, settings);
-    
-    // it works out of the box
-    glEnable(GL_TEXTURE_2D);
     
     while (window.isOpen()) {
         

@@ -55,7 +55,7 @@ void PowerUps::randomPowerUp(sf::RenderWindow &window, float speed){
     addProjSprite(temp, xMove, yMove);
 }
 
-void PowerUps::checkCollision(Ship::Ship &ship){
+void PowerUps::checkCollision(Ship &ship){
     sf::CircleShape target=ship.getMarker();
     
     for (int i=0; i<vecProjs.size(); i++) {
