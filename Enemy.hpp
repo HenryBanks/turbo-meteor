@@ -28,7 +28,7 @@ public:
     Enemy(sf::RenderWindow &window, float speed, sf::Texture &texture);
     virtual ~Enemy();
     void drawEnemy(sf::RenderWindow &window);
-    void updateEnemy(sf::RenderWindow &window);
+    void updateEnemy(sf::RenderWindow &window, float elapsedTime);
     void shoot(Ship& ship);
     sf::CircleShape getMarker();
     Projectiles getProjs();

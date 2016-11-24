@@ -77,11 +77,11 @@ void Enemy::drawEnemy(sf::RenderWindow &window){
     enemyProjs.drawProjs(window);
 }
 
-void Enemy::updateEnemy(sf::RenderWindow &window){
-    std::cout << markerShip.getPosition().x << " " << markerShip.getPosition().y << std::endl;
-    markerShip.move(velocity);
-    sprite.move(velocity);
-    enemyProjs.updateProjs();
+void Enemy::updateEnemy(sf::RenderWindow &window,float elapsedTime){
+    //std::cout << markerShip.getPosition().x << " " << markerShip.getPosition().y << std::endl;
+    markerShip.move(velocity*elapsedTime);
+    sprite.move(velocity*elapsedTime);
+    enemyProjs.updateProjs(elapsedTime);
 }
 
 sf::CircleShape Enemy::getMarker(){

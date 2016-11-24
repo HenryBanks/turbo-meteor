@@ -106,6 +106,7 @@ int playRound(sf::RenderWindow &window){
     
     sf::Clock clock;
     sf::Clock clockPerm;
+    sf::Clock clockSpeed;
     
     double timeLastShot=0;
     
@@ -152,6 +153,10 @@ int playRound(sf::RenderWindow &window){
     while (running) {
         
         sf::Event event;
+        
+        float ElapsedTime=clockSpeed.getElapsedTime().asSeconds();
+        clockSpeed.restart();
+        ElapsedTime=ElapsedTime*200;
         
         while (window.pollEvent(event)) {
             if (event.type==sf::Event::Closed) {
@@ -208,20 +213,20 @@ int playRound(sf::RenderWindow &window){
         }
         //meteors.randomMeteor(window);
         
-        enemies.updateProjsSprites(window);
+        enemies.updateProjsSprites(window, ElapsedTime);
         
         enemies.checkForDeletion(window);
         
         enemies.checkCollShots(projectiles.getProjs(), ship);
         
-        projectiles.updateProjs();
+        projectiles.updateProjs(ElapsedTime);
         
         //sf::Thread threadP(&Projectiles::updateProjs, &projectiles);
         //threadP.launch();
         
         projectiles.checkForDeletion(window);
         
-        meteors.updateProjsSprites();
+        meteors.updateProjsSprites(ElapsedTime);
         
         meteors.checkForDeletionSprites(window);
         
@@ -229,11 +234,11 @@ int playRound(sf::RenderWindow &window){
         
         powerUps.checkCollision(ship);
         
-        powerUps.updateProjsSprites();
+        powerUps.updateProjsSprites(ElapsedTime);
         
         powerUps.checkForDeletionSprites(window);
         
-        ship.updateShip(window);
+        ship.updateShip(window, ElapsedTime);
         
         if (meteors.checkCollision(ship.getMarker())||(enemies.checkCollision(ship.getMarker()))) {
             running=false;

@@ -72,16 +72,16 @@ void Projectiles::drawProjsSprites(sf::RenderWindow &window){
     }
 }
 
-void Projectiles::updateProjs(){
+void Projectiles::updateProjs(float elapsedTime){
     for (int i=0; i<vecProjs.size(); i++) {
-        vecProjs[i].move(vecVels[i][0], vecVels[i][1]);
+        vecProjs[i].move(vecVels[i][0]*elapsedTime, vecVels[i][1]*elapsedTime);
     }
 }
 
-void Projectiles::updateProjsSprites(){
+void Projectiles::updateProjsSprites(float elapsedTime){
     for (int i=0; i<vecProjs.size(); i++) {
-        vecProjs[i].move(vecVels[i][0], vecVels[i][1]);
-        vecSprites[i].move(vecVels[i][0], vecVels[i][1]);
+        vecProjs[i].move(vecVels[i][0]*elapsedTime, vecVels[i][1]*elapsedTime);
+        vecSprites[i].move(vecVels[i][0]*elapsedTime, vecVels[i][1]*elapsedTime);
     }
 }
 

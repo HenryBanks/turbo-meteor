@@ -24,9 +24,9 @@ void Enemies::drawProjsSprites(sf::RenderWindow &window){
     }
 }
 
-void Enemies::updateProjsSprites(sf::RenderWindow &window){
+void Enemies::updateProjsSprites(sf::RenderWindow &window, float elapsedTime){
     for ( auto &enemy : enemies){
-        enemy.updateEnemy(window);
+        enemy.updateEnemy(window, elapsedTime);
     }
 }
 
