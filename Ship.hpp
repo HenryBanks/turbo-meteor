@@ -27,7 +27,7 @@ public:
     Ship(float xPos, float yPos);
     virtual ~Ship();
     void drawShip(sf::RenderWindow &window);
-    void updateShip(sf::RenderWindow &window);
+    void updateShip(sf::RenderWindow &window, float elapsedTime);
     void moveShip(sf::Event &event);
     sf::CircleShape getMarker();
     void setShotTime(float time);

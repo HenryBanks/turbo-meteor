@@ -32,8 +32,8 @@ public:
     //void addProjSprite(sf::CircleShape newProj, float xMove, float yMove);
     void drawProjs(sf::RenderWindow &window);
     void drawProjsSprites(sf::RenderWindow &window);
-    void updateProjs();
-    void updateProjsSprites();
+    void updateProjs(float elapsedTime);
+    void updateProjsSprites(float elapsedTime);
     std::vector<sf::CircleShape> getProjs();
     void checkForDeletion(sf::RenderWindow &window);
     void checkForDeletionSprites(sf::RenderWindow &window);

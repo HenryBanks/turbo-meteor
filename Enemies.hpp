@@ -27,7 +27,7 @@ public:
     Enemies();
     ~Enemies();
     void drawProjsSprites(sf::RenderWindow &window);
-    void updateProjsSprites(sf::RenderWindow &window);
+    void updateProjsSprites(sf::RenderWindow &window, float elapsedTime);
     void addEnemy(sf::RenderWindow &window,float speed);
     void checkForDeletion(sf::RenderWindow &window);
     void shootAll(Ship &ship);

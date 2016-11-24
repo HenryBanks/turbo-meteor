@@ -59,19 +59,20 @@ void Ship::drawShip(sf::RenderWindow &window){
     window.draw(sprite);
 }
 
-void Ship::updateShip(sf::RenderWindow &window){
+void Ship::updateShip(sf::RenderWindow &window, float elapsedTime){
+    float dis=elapsedTime*speed;
     if (upB && markerShip.getPosition().y>0) {
-        markerShip.move(0, -1);
-        sprite.move(0, -1);}
+        markerShip.move(0, -dis);
+        sprite.move(0, -dis);}
     if (downB && markerShip.getPosition().y<window.getSize().y-2*markerShip.getRadius()){
-        markerShip.move(0, 1);
-        sprite.move(0, 1);}
+        markerShip.move(0, dis);
+        sprite.move(0, dis);}
     if (leftB && markerShip.getPosition().x>0){
-        markerShip.move(-1, 0);
-        sprite.move(-1, 0);}
+        markerShip.move(-dis, 0);
+        sprite.move(-dis, 0);}
     if (rightB && markerShip.getPosition().x<window.getSize().x-2*markerShip.getRadius()){
-        markerShip.move(1, 0);
-        sprite.move(1, 0);}
+        markerShip.move(dis, 0);
+        sprite.move(dis, 0);}
 }
 
 void Ship::moveShip(sf::Event &event){
