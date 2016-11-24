@@ -40,4 +40,9 @@
 ////////////////////////////////////////////////////////////
 std::string resourcePath(void);
 
+/*std::string resourcePath(void)
+{
+    return "/";
+}*/
+
 #endif

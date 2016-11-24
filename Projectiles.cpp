@@ -10,17 +10,17 @@
 
 Projectiles::Projectiles(){
     if (!texture.loadFromFile(resourcePath() + "meteor.png")) {
-        return EXIT_FAILURE;
+        return;// EXIT_FAILURE;
     }
     if (!shotSoundBuffer.loadFromFile(resourcePath() + "blaster.wav")) {
-        return EXIT_FAILURE;
+        return;// EXIT_FAILURE;
     }
     shotSound.setBuffer(shotSoundBuffer);
     std::cout << "vecProjs max size: " << vecProjs.max_size() << std::endl;
 }
 
 Projectiles::~Projectiles(){
-    
+
 }
 
 void Projectiles::addProj(sf::CircleShape newProj, float xMove, float yMove){
@@ -46,7 +46,7 @@ void Projectiles::addProjSprite(sf::CircleShape newProj, float xMove, float yMov
     temp.push_back(xMove);
     temp.push_back(yMove);
     vecVels.push_back(temp);
-    
+
     sf::Sprite sprite(texture);
     double scaleUp=2.5*newProj.getRadius()/sprite.getLocalBounds().width;
     std::cout << "ScaleUp: " << scaleUp << std::endl;
@@ -183,7 +183,7 @@ bool Projectiles::checkCollision(sf::CircleShape target){
     return false;
 }
 
-void Projectiles::checkCollShots(std::vector<sf::CircleShape> shotVec, Ship::Ship &ship){
+void Projectiles::checkCollShots(std::vector<sf::CircleShape> shotVec, Ship &ship){
     for (int i=0; i<vecProjs.size(); i++){
         sf::CircleShape proj = vecProjs[i];
         double m_x=proj.getPosition().x+proj.getRadius();

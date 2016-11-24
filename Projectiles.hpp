@@ -40,21 +40,21 @@ public:
     void shoot(float xf, float yf, float xi, float yi, float rad);
     void shootSpecial(sf::Event event, sf::CircleShape markerShip);
     bool checkCollision(sf::CircleShape target);
-    void checkCollShots(std::vector<sf::CircleShape> shotVec, Ship::Ship &ship);
-    
+    void checkCollShots(std::vector<sf::CircleShape> shotVec, Ship &ship);
+
 protected:
     std::vector<sf::CircleShape> vecProjs;
-    std::vector<std::vector<float>> vecVels;
+    std::vector<std::vector<float> > vecVels;
     std::vector<sf::Sprite> vecSprites;
     sf::Texture texture;
     sf::SoundBuffer shotSoundBuffer;
     sf::Sound shotSound;
     int speed;
-    
+
 private:
-    
-    
-    
+
+
+
 };
 
 #endif /* Projectiles_hpp */

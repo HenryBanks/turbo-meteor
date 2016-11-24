@@ -9,49 +9,49 @@
 #include "Ship.hpp"
 
 Ship::Ship(){
-    
+
 }
 
 Ship::Ship(float xPos, float yPos){
-    
+
     double radius=45.5;
-    
+
     markerShip.setRadius(radius);
-    
+
     markerShip.setFillColor(sf::Color::Transparent);
-    
+
     markerShip.setOutlineThickness(5);
-    
+
     markerShip.setOutlineColor(sf::Color::Blue);
-    
+
     markerShip.setPosition(xPos, yPos);
-    
+
     upB=false;
     downB=false;
     leftB=false;
     rightB=false;
-    
+
     shotTime=0.5;
-    
+
     if (!texture.loadFromFile(resourcePath() + "ufoGreen.png")) {
-        return EXIT_FAILURE;
+        return;// EXIT_FAILURE;
     }
-    
+
     sprite.setTexture(texture);
-    
+
     //sprite.setScale(100, 100);
-    
-    
+
+
     sprite.setPosition(xPos, yPos);
-    
+
     score=0;
-    
+
     speed=1;
-    
+
 }
 
 Ship::~Ship(){
-    
+
 }
 
 void Ship::drawShip(sf::RenderWindow &window){
@@ -75,7 +75,7 @@ void Ship::updateShip(sf::RenderWindow &window){
 }
 
 void Ship::moveShip(sf::Event &event){
-    
+
     if (event.type==sf::Event::KeyPressed){
         if (event.key.code==sf::Keyboard::Up||event.key.code==sf::Keyboard::W) {
             upB=true;

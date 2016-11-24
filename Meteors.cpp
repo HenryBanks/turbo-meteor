@@ -10,7 +10,7 @@
 
 Meteors::Meteors(){
     if (!texture.loadFromFile(resourcePath() + "c40000.png")) {
-        return EXIT_FAILURE;
+        return; ///EXIT_FAILURE; Constructor has no return type!!!
     }
 }
 
@@ -24,7 +24,7 @@ void Meteors::addProjSprite(sf::CircleShape newProj, float xMove, float yMove){
     temp.push_back(xMove);
     temp.push_back(yMove);
     vecVels.push_back(temp);
-    
+
     sf::Sprite sprite(texture);
     sprite.setPosition(newProj.getPosition().x-2*newProj.getRadius(), newProj.getPosition().y-2*newProj.getRadius());
     //sprite.setPosition(newProj.getPosition().x, newProj.getPosition().y);

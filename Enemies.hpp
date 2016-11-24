@@ -30,14 +30,14 @@ public:
     void updateProjsSprites(sf::RenderWindow &window);
     void addEnemy(sf::RenderWindow &window,float speed);
     void checkForDeletion(sf::RenderWindow &window);
-    void shootAll(Ship::Ship &ship);
+    void shootAll(Ship &ship);
     bool checkCollision(sf::CircleShape target);
-    void checkCollShots(std::vector<sf::CircleShape> shotVec, Ship::Ship &ship);
-    
+    void checkCollShots(std::vector<sf::CircleShape> shotVec, Ship &ship);
+
 protected:
-    
+
 private:
-    std::vector<Enemy::Enemy> enemies;
+    std::vector<Enemy> enemies;
     sf::Texture texture;
 };
 

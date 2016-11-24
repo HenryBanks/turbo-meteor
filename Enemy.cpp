@@ -9,40 +9,40 @@
 #include "Enemy.hpp"
 
 Enemy::Enemy(){
-    
+
 }
 
 Enemy::~Enemy(){
-    
+
 }
 
 Enemy::Enemy(float xPos, float yPos){
-    
+
     double radius=45.5;
-    
+
     markerShip.setRadius(radius);
-    
+
     markerShip.setFillColor(sf::Color::Transparent);
-    
+
     markerShip.setOutlineThickness(5);
-    
+
     markerShip.setOutlineColor(sf::Color::Blue);
-    
+
     markerShip.setPosition(xPos, yPos);
-    
+
     shotTime=0.5;
-    
+
     if (!texture.loadFromFile(resourcePath() + "ufoRed.png")) {
-        return EXIT_FAILURE;
+        //return EXIT_FAILURE;
     }
-    
+
     sprite.setTexture(texture);
-    
+
     //sprite.setScale(100, 100);
-    
-    
+
+
     sprite.setPosition(xPos, yPos);
-    
+
 }
 
 Enemy::Enemy(sf::RenderWindow &window, float speed, sf::Texture &texture){
@@ -57,9 +57,9 @@ Enemy::Enemy(sf::RenderWindow &window, float speed, sf::Texture &texture){
     yEnd=dis(gen);
     xMove=xEnd-xStart;
     yMove=yEnd-yStart;
-    
+
     sprite.setTexture(texture);
-    
+
     double radius=45.5;
     markerShip.setRadius(radius);
     float norm=sqrt(xMove*xMove+yMove*yMove);
@@ -88,14 +88,14 @@ sf::CircleShape Enemy::getMarker(){
     return markerShip;
 }
 
-void Enemy::shoot(Ship::Ship &ship){
+void Enemy::shoot(Ship &ship){
     float x_i=markerShip.getPosition().x;
     float y_i=markerShip.getPosition().y;
     float x_f=ship.getMarker().getPosition().x;
     float y_f=ship.getMarker().getPosition().y;
     float rad=markerShip.getRadius();
     enemyProjs.shoot(x_f, y_f, x_i, y_i, rad);
-    
+
 }
 
 Projectiles Enemy::getProjs(){

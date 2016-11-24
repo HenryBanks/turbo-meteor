@@ -10,7 +10,7 @@
 
 PowerUps::PowerUps(){
     if (!texture.loadFromFile(resourcePath() + "powerupBlue_bolt.png")) {
-        return EXIT_FAILURE;
+        return;// EXIT_FAILURE;
     }
 }
 
@@ -24,7 +24,7 @@ void PowerUps::addProjSprite(sf::CircleShape newProj, float xMove, float yMove){
     temp.push_back(xMove);
     temp.push_back(yMove);
     vecVels.push_back(temp);
-    
+
     sf::Sprite sprite(texture);
     double scaleUp=2*newProj.getRadius()/sprite.getLocalBounds().width;
     std::cout << "ScaleUp: " << scaleUp << std::endl;
@@ -55,9 +55,9 @@ void PowerUps::randomPowerUp(sf::RenderWindow &window, float speed){
     addProjSprite(temp, xMove, yMove);
 }
 
-void PowerUps::checkCollision(Ship::Ship &ship){
+void PowerUps::checkCollision(Ship &ship){
     sf::CircleShape target=ship.getMarker();
-    
+
     for (int i=0; i<vecProjs.size(); i++) {
         sf::CircleShape powerUp=vecProjs[i];
         double m_x=powerUp.getPosition().x+powerUp.getRadius();
